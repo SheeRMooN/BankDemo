@@ -33,7 +33,10 @@ public class AccountService {
         } catch (NumberFormatException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Используйте цыфры для пинкода");
         }
-        System.out.println(account);
+        Optional<Account> optional = accountRepo.findByName(account.getName());
+        if (optional.isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Акаунт с таким именем существует");
+        }
         accountRepo.save(account);
         account.setNumberAccount(account.getId() + NUMBER_SECRET);
         return account;
@@ -54,8 +57,8 @@ public class AccountService {
     public Account transfer(AccountDtoTransfer accountDtoTransfer) {
         Account account = checkAccount(accountDtoTransfer.getName(), accountDtoTransfer.getPinCode());
 
-        Optional<Account> secondAccount = accountRepo.findByNumberAccount(accountDtoTransfer.getAnotherAccount());
-        secondAccount.orElseThrow(() -> {
+        Optional<Account> secondOpt = accountRepo.findByNumberAccount(accountDtoTransfer.getAnotherAccount());
+        secondOpt.orElseThrow(() -> {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя перевести средства нету такого аккаунта");
         });
         if (accountDtoTransfer.getRefreshBalance() < 0) {
@@ -65,8 +68,9 @@ public class AccountService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вы не можите иметь отрицательный баланс");
         }
         long newBalance = account.getBalance() - accountDtoTransfer.getRefreshBalance();
-
         account.setBalance(newBalance);
+        Account secondAccount = secondOpt.get();
+        secondOpt.get().setBalance(secondAccount.getBalance() + accountDtoTransfer.getRefreshBalance());
         return account;
     }
 

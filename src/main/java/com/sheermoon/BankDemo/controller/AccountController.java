@@ -41,7 +41,7 @@ public class AccountController {
     }
 
     @GetMapping("/createAccounts")
-    public ResponseEntity<List<Account>> getJson() {
+    public ResponseEntity<List<Account>> createAccounts() {
         List<Account> accounts = List.of(
                 new Account(null, "Vova", "1111", null, 1000L),
                 new Account(null, "Ivan", "1111", null, 2000L),
