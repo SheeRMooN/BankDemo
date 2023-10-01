@@ -20,10 +20,12 @@ public class Account {
     @Column(unique = true)
     private String name;
 
+    @JsonIgnore
     private String pinCode;
 
     @Column(unique = true)
     private Long numberAccount;
 
+    @JsonIgnore
     private Long balance;
 }
