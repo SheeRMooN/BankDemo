@@ -23,9 +23,9 @@ public class Account {
     @JsonIgnore
     private String pinCode;
 
+    @JsonIgnore
     @Column(unique = true)
     private Long numberAccount;
 
-    @JsonIgnore
     private Long balance;
 }
